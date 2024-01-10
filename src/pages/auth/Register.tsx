@@ -1,21 +1,33 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { useMutation } from 'react-query';
+import * as apiClient from '../../api/apiClient';
 
 export interface RegisterFormData {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword?: string;
 }
 
 const Register: React.FC = () => {
   const { register,watch, handleSubmit, formState: { errors } } = useForm<RegisterFormData>();
 
+  const mutation = useMutation(apiClient.register ,{
+    onSuccess: () => {
+      console.log('Registration successful');
+    },
+    onError: (error) => {
+      console.error('Registration failed:', error);
+    },
+  });
+
   const onSubmit = (data: RegisterFormData) => {
-   console.log(data)
-    // Lakukan logika untuk mengirimkan data ke server jika password cocok
+    const { confirmPassword, ...registerData } = data;
+    mutation.mutate(registerData);
+    console.log(data)
   };
 
   return (

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-query";
 import * as apiClient from "../../api/apiClient";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAppContext } from "../../contexts/AppContext";
 
 export interface RegisterFormData {
   firstName: string;
@@ -21,12 +22,19 @@ const Register: React.FC = () => {
     formState: { errors },
   } = useForm<RegisterFormData>();
 
+  const navigate = useNavigate();
+  const { showToast } = useAppContext();
+
+
   const mutation = useMutation(apiClient.register, {
     onSuccess: () => {
       console.log("Registration successful");
+      showToast({message: "Registration successful, You can now login", type: 'success'});
+      navigate('/login');
     },
     onError: (error) => {
       console.error("Registration failed:", error);
+      showToast({message: "Registration failed, check your input", type: 'error'});
     },
   });
 

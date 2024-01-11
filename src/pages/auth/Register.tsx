@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import * as apiClient from "../../api/apiClient";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAppContext } from "../../contexts/AppContext";
@@ -24,13 +24,15 @@ const Register: React.FC = () => {
 
   const navigate = useNavigate();
   const { showToast } = useAppContext();
+  const queryClient = useQueryClient();
 
 
   const mutation = useMutation(apiClient.register, {
-    onSuccess: () => {
-      console.log("Registration successful");
-      showToast({message: "Registration successful, You can now login", type: 'success'});
-      navigate('/login');
+    onSuccess: async() => {
+      await queryClient.invalidateQueries("validateToken");
+      showToast({message: "Registration successful", type: 'success'});
+      navigate('/');
+      window.location.reload();
     },
     onError: (error) => {
       console.error("Registration failed:", error);

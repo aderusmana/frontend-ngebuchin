@@ -1,15 +1,33 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Await, Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../contexts/AppContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { GiHamburgerMenu } from "react-icons/gi";
+import * as apiClient from "./../api/apiClient";
+import { useMutation, useQueryClient } from "react-query";
 
 
 
 const Header = () => {
-  const { isLogin } = useAppContext();
+  const { isLogin, showToast, isLoading} = useAppContext();
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation(apiClient.logout, {
+    onSuccess: async() => {
+      await queryClient.invalidateQueries("validateToken");
+      showToast({message: "Logged out successfully", type: 'success'});
+      navigate("/");
+      window.location.reload();
+    },
+    onError: (error) => {
+      console.error("Logout failed:", error);
+      showToast({message: "Logout failed, check your input", type: 'error'});
+    },
+    
+  })
 
   const toggleSidebar = () => {
     setMobileMenuOpen(!isMobileMenuOpen);
@@ -32,6 +50,11 @@ const Header = () => {
     };
   }, [isMobileMenuOpen]);
 
+  const logOutHandler = () => {
+    mutation.mutate();
+
+  }
+
   return (
     <div className="bg-pink-800 py-6">
       <div className="container px-10 mx-auto flex justify-between items-center relative">
@@ -53,7 +76,7 @@ const Header = () => {
               >
                 My Hotels
               </Link>
-              <button className="text-white font-bold hover:bg-white hover:text-pink-800 rounded-md">
+              <button onClick={logOutHandler} disabled={isLoading} className="text-white font-bold hover:bg-white hover:text-pink-800 rounded-md">
                 Sign Out
               </button>
             </>
@@ -107,7 +130,7 @@ const Header = () => {
                   <Link to={"/my-hotels"} className="text-pink-800 font-bold hover:bg-pink-800 hover:text-white rounded-md">
                     My Hotels
                   </Link>
-                  <button className="text-pink-800 font-bold hover:bg-pink-800 hover:text-white rounded-md">Sign Out</button>
+                  <button onClick={logOutHandler} className="text-pink-800 font-bold hover:bg-pink-800 hover:text-white rounded-md">Sign Out</button>
                 </>
               ) : (
                 <Link to={"/login"} className="text-pink-800 font-bold">

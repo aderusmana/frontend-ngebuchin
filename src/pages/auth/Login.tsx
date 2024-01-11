@@ -2,9 +2,10 @@ import React, { useState }  from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import * as apiClient from "../../api/apiClient";
 import { useAppContext } from '../../contexts/AppContext';
+import { assert } from 'console';
 
 
 
@@ -18,12 +19,15 @@ const Login: React.FC = () => {
 
     const { showToast } = useAppContext();
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
 
     const mutation = useMutation(apiClient.login, {
-      onSuccess: () => {
-        console.log("Login successful");
+      onSuccess: async() => {
+        await queryClient.invalidateQueries("validateToken");
         showToast({message: "Login successful", type: 'success'});
         navigate('/');
+        window.location.reload();
       },
       onError: (error) => {
         console.error("Login failed:", error);

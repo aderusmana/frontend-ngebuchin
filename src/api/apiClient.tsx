@@ -42,6 +42,25 @@ export const login = async (formData: LoginFormData) => {
     }
   }
 
+  export const logout = async () => {
+    try {
+      const response = await axiosInstance.post('/auth/logout');
+      return response.data;
+    } catch (error) {
+      console.error('Error during logout:', error);
+      if (error.response) {
+        // Jika respons dari server mengandung informasi tentang kesalahan
+        throw new Error('Logout failed: ' + error.response.data.message);
+      } else if (error.request) {
+        // Jika permintaan tidak mendapatkan respons dari server
+        throw new Error('No response from server during logout');
+      } else {
+        // Jika terjadi kesalahan lain
+        throw new Error('Logout failed: ' + error.message);
+      }
+    }
+  }
+
   export const validateToken = async () => {
       const response = await axiosInstance.get('/auth/validate-token',{
         withCredentials: true

@@ -4,6 +4,8 @@ import React from "react";
 import Register from "./pages/auth/Register";
 import Login from "./pages/auth/Login";
 import HomePage from "./pages/HomePage";
+import MyHotels from "./pages/MyHotels";
+import MyBookings from "./pages/MyBookings";
 
 function App() {
   return (
@@ -31,17 +33,25 @@ function App() {
           <Route
             path="/register"
             element={
-              <Layout>
-                <Register />
-              </Layout>
+              <Layout><Register /></Layout>
             }
           />
           <Route
             path="/login"
             element={
-              <Layout>
-                <Login />
-              </Layout>
+              <Layout><Login /></Layout>
+            }
+          />
+          <Route
+            path="/my-bookings"
+            element={
+              <Layout><MyBookings /></Layout>
+            }
+          />
+          <Route
+            path="/my-hotels"
+            element={
+              <Layout><MyHotels /></Layout>
             }
           />
         </Routes>

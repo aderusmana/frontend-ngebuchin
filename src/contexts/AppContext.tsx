@@ -11,12 +11,14 @@ interface ToastMessageProps {
 interface AppContextProps {
   showToast: (toastMessage: ToastMessageProps) => void;
   isLogin: boolean;
+  isLoading: boolean;
+
 }
 
 const AppContext = createContext<AppContextProps | undefined>(undefined);
 
 export const AppContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const { isError } = useQuery("validateToken", apiClient.validateToken, {
+  const {isLoading, isError,data } = useQuery("validateToken", apiClient.validateToken, {
     retry: false
   });
 
@@ -27,9 +29,10 @@ export const AppContextProvider = ({ children }: { children: React.ReactNode }) 
       toast.error(toastMessage.message);
     }
   };
+  const isLogin = !isError && data;
 
   return (
-    <AppContext.Provider value={{ showToast, isLogin: !isError }}>
+    <AppContext.Provider value={{ showToast, isLogin, isLoading}}>
       {children}
       <Toaster position="top-right" reverseOrder={false} />
     </AppContext.Provider>

@@ -5,7 +5,6 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useMutation, useQueryClient } from 'react-query';
 import * as apiClient from "../../api/apiClient";
 import { useAppContext } from '../../contexts/AppContext';
-import { assert } from 'console';
 
 
 
@@ -25,9 +24,8 @@ const Login: React.FC = () => {
     const mutation = useMutation(apiClient.login, {
       onSuccess: async() => {
         await queryClient.invalidateQueries("validateToken");
-        showToast({message: "Login successful", type: 'success'});
+          showToast({message: "Login successful", type: 'success'});
         navigate('/');
-        window.location.reload();
       },
       onError: (error) => {
         console.error("Login failed:", error);

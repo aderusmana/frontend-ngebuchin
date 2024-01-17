@@ -6,28 +6,24 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import * as apiClient from "./../api/apiClient";
 import { useMutation, useQueryClient } from "react-query";
 
-
-
 const Header = () => {
-  const { isLogin, showToast, isLoading} = useAppContext();
+  const { isLogin, showToast, isLoading } = useAppContext();
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const mutation = useMutation(apiClient.logout, {
-    onSuccess: async() => {
+    onSuccess: async () => {
       await queryClient.invalidateQueries("validateToken");
-      showToast({message: "Logged out successfully", type: 'success'});
+      showToast({ message: "Logged out successfully", type: "success" });
       navigate("/");
-      window.location.reload();
     },
     onError: (error) => {
       console.error("Logout failed:", error);
-      showToast({message: "Logout failed, check your input", type: 'error'});
+      showToast({ message: "Logout failed, check your input", type: "error" });
     },
-    
-  })
+  });
 
   const toggleSidebar = () => {
     setMobileMenuOpen(!isMobileMenuOpen);
@@ -41,19 +37,18 @@ const Header = () => {
 
   useEffect(() => {
     if (isMobileMenuOpen) {
-      document.addEventListener('mousedown', closeSidebar);
+      document.addEventListener("mousedown", closeSidebar);
     } else {
-      document.removeEventListener('mousedown', closeSidebar);
+      document.removeEventListener("mousedown", closeSidebar);
     }
     return () => {
-      document.removeEventListener('mousedown', closeSidebar);
+      document.removeEventListener("mousedown", closeSidebar);
     };
   }, [isMobileMenuOpen]);
 
   const logOutHandler = () => {
     mutation.mutate();
-
-  }
+  };
 
   return (
     <div className="bg-pink-800 py-6">
@@ -76,7 +71,11 @@ const Header = () => {
               >
                 My Hotels
               </Link>
-              <button onClick={logOutHandler} disabled={isLoading} className="text-white font-bold hover:bg-white hover:text-pink-800 rounded-md">
+              <button
+                onClick={logOutHandler}
+                disabled={isLoading}
+                className="text-white font-bold hover:bg-white hover:text-pink-800 rounded-md"
+              >
                 Sign Out
               </button>
             </>
@@ -102,47 +101,60 @@ const Header = () => {
 
       {/* Mobile Menu Modal */}
       <AnimatePresence>
-       {isMobileMenuOpen && (
-        <motion.div 
-        className="fixed inset-0 overflow-hidden z-50 bg-black bg-opacity-50 flex items-center justify-end"
-        initial={{ opacity:0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }} >
-
-          <motion.div className="bg-white w-52 h-full overflow-y-auto" ref={modalRef}
-          initial={{ x: "100" }}
-          animate={{ x:0 }}
-          exit={{ x: "100%" }}>
-            <div className="flex justify-end p-4">
-              <button
-                className="text-pink-800 text-lg focus:outline-none"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                ✕
-              </button>
-            </div>
-            <div className="flex flex-col space-y-2 p-4">
-              {isLogin ? (
-                <>
-                  <Link to={"/my-bookings"} className="text-pink-800 font-bold hover:bg-pink-800 hover:text-white rounded-md">
-                    My Bookings
+        {isMobileMenuOpen && (
+          <motion.div
+            className="fixed inset-0 overflow-hidden z-50 bg-black bg-opacity-50 flex items-center justify-end"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white w-52 h-full overflow-y-auto"
+              ref={modalRef}
+              initial={{ x: "100" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+            >
+              <div className="flex justify-end p-4">
+                <button
+                  className="text-pink-800 text-lg focus:outline-none"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="flex flex-col space-y-2 p-4">
+                {isLogin ? (
+                  <>
+                    <Link
+                      to={"/my-bookings"}
+                      className="text-pink-800 font-bold hover:bg-pink-800 hover:text-white rounded-md"
+                    >
+                      My Bookings
+                    </Link>
+                    <Link
+                      to={"/my-hotels"}
+                      className="text-pink-800 font-bold hover:bg-pink-800 hover:text-white rounded-md"
+                    >
+                      My Hotels
+                    </Link>
+                    <button
+                      onClick={logOutHandler}
+                      className="text-pink-800 font-bold hover:bg-pink-800 hover:text-white rounded-md"
+                    >
+                      Sign Out
+                    </button>
+                  </>
+                ) : (
+                  <Link to={"/login"} className="text-pink-800 font-bold">
+                    Login
                   </Link>
-                  <Link to={"/my-hotels"} className="text-pink-800 font-bold hover:bg-pink-800 hover:text-white rounded-md">
-                    My Hotels
-                  </Link>
-                  <button onClick={logOutHandler} className="text-pink-800 font-bold hover:bg-pink-800 hover:text-white rounded-md">Sign Out</button>
-                </>
-              ) : (
-                <Link to={"/login"} className="text-pink-800 font-bold">
-                  Login
-                </Link>
-              )}
-            </div>
+                )}
+              </div>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )} 
+        )}
       </AnimatePresence>
-      
     </div>
   );
 };
